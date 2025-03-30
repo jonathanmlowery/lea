@@ -60,6 +60,17 @@ TEST(KeyhashTest, AvalancheEffect) {
                           << " flips for 'abc' vs 'abcd'";
 }
 
+TEST(KeyhashTest, FullInputLateBitAvalanche) {
+    std::bitset<256> input1;
+    input1.set(255);
+    std::bitset<256> input2 = input1;
+    input2.flip(255);
+    lea::keyhash hash1 = lea::gen_keyhash(input1, 32);
+    lea::keyhash hash2 = lea::gen_keyhash(input2, 32);
+    size_t       flips = (hash1.bits ^ hash2.bits).count();
+    EXPECT_GE(flips, 100) << "Flips: " << flips;
+}
+
 TEST(KeyhashTest, NoLongSequences) {
     std::string      s     = "hello world";
     std::bitset<256> input = lea::bitify_str(s);
