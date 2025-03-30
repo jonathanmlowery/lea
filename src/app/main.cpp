@@ -58,14 +58,21 @@ int main(int argc, char** argv) {
         }
     }
 
-    std::bitset<256> original = std::bitset<256>(8'567'498'930'133'322);
-    lea::keyhash     hashed   = lea::gen_keyhash(original, 7);
+    std::bitset<256> original1 = lea::bitify_str("abc");
+    std::bitset<256> original2 = lea::bitify_str("abd");
+    lea::keyhash hashed1   = lea::gen_keyhash(original1, original1.size());
+    lea::keyhash hashed2   = lea::gen_keyhash(original2, original2.size());
+    std::bitset<256> diff  = hashed1.bits ^ hashed2.bits;
+    int              flips = diff.count();
     // std::bitset<512> expanded = lea::bit_interleaving_expand(original,
     // 7); std::bitset<256> compacted =
     // lea::sequential_bit_compact(expanded);
 
-    std::cout << "Original bits: \n" << original << '\n';
-    std::cout << "Keyhash bits: \n" << hashed.bits << '\n';
+    std::cout << "Original1 bits: \n" << original1 << '\n';
+    std::cout << "Keyhash1 bits: \n" << hashed1.bits << '\n';
+    std::cout << "Original2 bits: \n" << original2 << '\n';
+    std::cout << "Keyhash2 bits: \n" << hashed2.bits << '\n';
     // std::cout << "Expanded bits: \n" << expanded << '\n';
     // std::cout << "Compacted bits: \n" << compacted << '\n';
+    std::cout << "Flips: " << flips << '\n';
 }
