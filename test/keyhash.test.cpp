@@ -3,6 +3,23 @@
 #include <gtest/gtest.h>
 
 #include <bitset>
+#include <random>
+#include <unordered_set>
+
+// Helper to generate a random 256-bit bitset
+std::bitset<256> generate_random_bitset() {
+    std::random_device rd;
+    std::mt19937_64    gen(rd());
+    std::bitset<256>   bits;
+
+    for (size_t i = 0; i < 256; i += 64) {
+        uint64_t chunk = gen() & 0xFF'FF'FF'FF'FF'FF'FF'FFULL;
+        for (size_t j = 0; j < 64 && (i + j) < 256; j++) {
+            bits [i + j] = (chunk >> j) & 1;
+        }
+    }
+    return bits;
+}
 
 TEST(KeyhashTest, AvalancheEffect) {
     // Test case 1: "abc" vs "abd"
@@ -119,4 +136,29 @@ TEST(KeyhashTest, CollisionResistance) {
     size_t flips = (hash1.bits ^ hash2.bits).count();
     EXPECT_GE(flips, 50) << "Weak difference: " << flips
                          << " flips for 'foobar' vs 'barfoo'";
+}
+
+TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
+    const size_t                         NUM_INPUTS = 100'000;
+    std::unordered_set<std::bitset<256>> hash_outputs;
+
+    for (size_t i = 0; i < NUM_INPUTS; i++) {
+        std::bitset<256> input = generate_random_bitset();
+        lea::keyhash     hash  = lea::gen_keyhash(input, 32);
+        auto [it, inserted]    = hash_outputs.insert(hash.bits);
+
+        if (!inserted) {
+            FAIL() << "Collision detected at input " << i
+                   << ": hash = " << hash.bits;
+        }
+
+        // Optional: Progress log for big runs
+        if (i % 1'000 == 0) {
+            std::cout << "Processed " << i << " inputs..." << std::endl;
+        }
+    }
+
+    EXPECT_EQ(hash_outputs.size(), NUM_INPUTS)
+        << "Expected " << NUM_INPUTS << " unique hashes, got "
+        << hash_outputs.size();
 }

@@ -3,6 +3,7 @@
 #include <bitset>
 #include <cmath>
 #include <iostream>
+#include <random>
 #include <utility>
 
 namespace lea {
@@ -16,28 +17,34 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
     std::bitset<256> compacted_bits = sequential_bit_compact(
         expanded_bits);
 
-    // xor_round_constant(compacted_bits, 1);
-    intermittent_bit_flip(compacted_bits);
-    // mix(compacted_bits, 1);
-    compacted_bits ^= std::bitset<256>(input_byte_length);
-    compacted_bits  = rotate_left(compacted_bits,
+    compacted_bits = rotate_left(compacted_bits,
                                  compacted_bits.count() % PRIMES [0]);
+
+    // compacted_bits = modulo_bitset(compacted_bits, 2);
+    // xor_round_constant(compacted_bits, 1);
+    // mix(compacted_bits, 1);
     // apply_sbox(compacted_bits);
+
+    intermittent_bit_flip(compacted_bits);
+    compacted_bits ^= std::bitset<256>(input_byte_length);
 
     for (size_t i = 1; i < EXPAND_COMPACT_ITERATIONS; i++) {
         expanded_bits = bit_interleaving_expand(compacted_bits, 32);
 
         compacted_bits = sequential_bit_compact(expanded_bits);
-        // compacted_bits = rotate_left(compacted_bits, PRIMES [i]);
+        // compacted_bits =
+        // rotate_left(compacted_bits, PRIMES
+        // [i]);
         compacted_bits = rotate_left(compacted_bits,
                                      compacted_bits.count() % PRIMES [i]);
 
         // compacted_bits = modulo_bitset(compacted_bits, 2);
         // xor_round_constant(compacted_bits, i);
         // mix(compacted_bits, i);
+        // apply_sbox(compacted_bits);
+
         intermittent_bit_flip(compacted_bits);
         compacted_bits ^= std::bitset<256>(input_byte_length);
-        // apply_sbox(compacted_bits);
     }
 
     return keyhash {compacted_bits};
