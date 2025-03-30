@@ -59,13 +59,13 @@ int main(int argc, char** argv) {
     }
 
     std::bitset<256> original = std::bitset<256>(8'567'498'930'133'322);
-    // lea::keyhash     hashed   = lea::gen_keyhash(original, 53);
-    std::bitset<512> expanded = lea::bit_interleaving_expand(original, 7);
-    // std::bitset<256> compacted =
+    lea::keyhash     hashed   = lea::gen_keyhash(original, 7);
+    // std::bitset<512> expanded = lea::bit_interleaving_expand(original,
+    // 7); std::bitset<256> compacted =
     // lea::sequential_bit_compact(expanded);
 
     std::cout << "Original bits: \n" << original << '\n';
-    // std::cout << "Keyhash bits: \n" << hashed.bits << '\n';
-    std::cout << "Expanded bits: \n" << expanded << '\n';
+    std::cout << "Keyhash bits: \n" << hashed.bits << '\n';
+    // std::cout << "Expanded bits: \n" << expanded << '\n';
     // std::cout << "Compacted bits: \n" << compacted << '\n';
 }
