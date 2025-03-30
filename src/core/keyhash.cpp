@@ -21,6 +21,7 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
     // xor_round_constant(compacted_bits, 1);
     intermittent_bit_flip(compacted_bits);
     mix(compacted_bits, 1);
+    compacted_bits ^= std::bitset<256>(input_byte_length);
     // apply_sbox(compacted_bits);
 
     // std::cout << "Compacted: \n" << compacted_bits << '\n';
@@ -39,6 +40,7 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
         // xor_round_constant(compacted_bits, i);
         mix(compacted_bits, i);
         intermittent_bit_flip(compacted_bits);
+        compacted_bits ^= std::bitset<256>(input_byte_length);
         // apply_sbox(compacted_bits);
     }
 

@@ -44,6 +44,20 @@ TEST(KeyhashTest, AvalancheEffect) {
     flips = diff.count();
     EXPECT_GE(flips, 100) << "Avalanche effect weak: " << flips
                           << " flips for 254 vs 255";
+
+    // Test case 4: "abc" vs "abcd" as a full 256 bit input
+    s1     = "abc";
+    s2     = "abcd";
+    input1 = lea::bitify_str(s1);
+    input2 = lea::bitify_str(s2);
+
+    hash1 = lea::gen_keyhash(input1, 32);
+    hash2 = lea::gen_keyhash(input2, 32);
+
+    diff  = hash1.bits ^ hash2.bits;
+    flips = diff.count();
+    EXPECT_GE(flips, 100) << "Avalanche effect weak: " << flips
+                          << " flips for 'abc' vs 'abcd'";
 }
 
 TEST(KeyhashTest, NoLongSequences) {
