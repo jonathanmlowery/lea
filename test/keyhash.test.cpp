@@ -7,10 +7,11 @@
 #include <unordered_set>
 
 // Helper to generate a random 256-bit bitset
+std::random_device rd;
+std::mt19937_64    gen(rd());
+
 std::bitset<256> generate_random_bitset() {
-    std::random_device rd;
-    std::mt19937_64    gen(rd());
-    std::bitset<256>   bits;
+    std::bitset<256> bits;
 
     for (size_t i = 0; i < 256; i += 64) {
         uint64_t chunk = gen() & 0xFF'FF'FF'FF'FF'FF'FF'FFULL;
@@ -115,7 +116,7 @@ TEST(KeyhashTest, NoLongSequences) {
 
 TEST(KeyhashTest, EmptyInput) {
     std::bitset<256> input;
-    lea::keyhash     hash = lea::gen_keyhash(input, 1);
+    lea::keyhash     hash = lea::gen_keyhash(input, 256);
 
     EXPECT_NE(hash.bits.count(), 0) << "Empty input hashes to all zeros";
     EXPECT_NE(hash.bits.count(), 256) << "Empty input hashes to all ones";
@@ -161,4 +162,32 @@ TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
     EXPECT_EQ(hash_outputs.size(), NUM_INPUTS)
         << "Expected " << NUM_INPUTS << " unique hashes, got "
         << hash_outputs.size();
+}
+
+TEST(KeyhashTest, HashTiming_100K) {
+    const size_t       NUM_INPUTS = 100'000;
+    std::random_device rd;
+    std::mt19937_64    gen(rd());
+
+    // Generate random inputs beforehand to exclude generation time from
+    // hash timing
+    std::vector<std::bitset<256>> inputs(NUM_INPUTS);
+    for (auto& input : inputs) { input = generate_random_bitset(); }
+
+    // Measure only the hashing time
+    auto start = std::chrono::high_resolution_clock::now();
+    for (auto& input : inputs) {
+        lea::keyhash hash = lea::gen_keyhash(input, 32);    // 8 rounds
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+
+    double time_us = std::chrono::duration<double, std::micro>(end - start)
+                         .count();
+    double avg_time_us = time_us / NUM_INPUTS;
+
+    std::cout << "Hashed " << NUM_INPUTS << " inputs in " << time_us
+              << " µs\n";
+    std::cout << "Average time per hash: " << avg_time_us << " µs\n";
+
+    SUCCEED();    // Test always passes, serving as a timing report
 }
