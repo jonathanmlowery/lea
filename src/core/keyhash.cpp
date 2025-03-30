@@ -1,11 +1,7 @@
 #include "keyhash.hpp"
 
 #include <bitset>
-#include <chrono>
 #include <cmath>
-#include <iostream>
-#include <random>
-#include <utility>
 
 namespace lea {
 
@@ -34,9 +30,6 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
         expanded_bits = bit_interleaving_expand(compacted_bits, 32);
 
         compacted_bits = sequential_bit_compact(expanded_bits);
-        // compacted_bits =
-        // rotate_left(compacted_bits, PRIMES
-        // [i]);
         compacted_bits = rotate_left(
             compacted_bits,
             (compacted_bits.count() * PRIMES [i]) % 256);
@@ -137,7 +130,7 @@ void xor_round_constant(std::bitset<256>& bits, size_t round) {
 
 void apply_sbox(std::bitset<256>& bits) {
     unsigned char* bytes = reinterpret_cast<unsigned char*>(&bits);
-    for (size_t j = 0; j < 32; j++) { bytes [j] ^= (bytes [j] * 17); }
+    for (size_t j = 0; j < 32; j++) { bytes [j] ^= (bytes [j] * PRIME1); }
 }
 
 void mix(std::bitset<256>& bits, size_t round) {

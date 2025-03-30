@@ -141,7 +141,7 @@ TEST(KeyhashTest, CollisionResistance) {
 }
 
 TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
-    const size_t                         NUM_INPUTS = 1'000;
+    const size_t                         NUM_INPUTS = 1'000'000;
     std::unordered_set<std::bitset<256>> hash_outputs;
 
     for (size_t i = 0; i < NUM_INPUTS; i++) {
@@ -165,8 +165,8 @@ TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
         << hash_outputs.size();
 }
 
-TEST(KeyhashTest, HashTiming_100K) {
-    const size_t       NUM_INPUTS = 100'000;
+TEST(KeyhashTest, HashTiming) {
+    const size_t       NUM_INPUTS = 1'000;
     std::random_device rd;
     std::mt19937_64    gen(rd());
 

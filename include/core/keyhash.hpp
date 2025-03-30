@@ -24,7 +24,7 @@ const size_t PRIMES [] = {3,
                           43,
                           47};
 
-const size_t EXPAND_COMPACT_ITERATIONS = 8;
+const size_t EXPAND_COMPACT_ITERATIONS = 4;
 
 // constexpr unsigned char TWO_POW_256_MINUS_189 [32] = {
 //     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
