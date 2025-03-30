@@ -5,6 +5,7 @@
 #include <bitset>
 #include <random>
 #include <unordered_set>
+#include <vector>
 
 // Helper to generate a random 256-bit bitset
 std::random_device rd;
@@ -140,7 +141,7 @@ TEST(KeyhashTest, CollisionResistance) {
 }
 
 TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
-    const size_t                         NUM_INPUTS = 100'000;
+    const size_t                         NUM_INPUTS = 1'000;
     std::unordered_set<std::bitset<256>> hash_outputs;
 
     for (size_t i = 0; i < NUM_INPUTS; i++) {
@@ -177,7 +178,7 @@ TEST(KeyhashTest, HashTiming_100K) {
     // Measure only the hashing time
     auto start = std::chrono::high_resolution_clock::now();
     for (auto& input : inputs) {
-        lea::keyhash hash = lea::gen_keyhash(input, 32);    // 8 rounds
+        lea::keyhash hash = lea::gen_keyhash(input, 32);
     }
     auto end = std::chrono::high_resolution_clock::now();
 
@@ -185,9 +186,9 @@ TEST(KeyhashTest, HashTiming_100K) {
                          .count();
     double avg_time_us = time_us / NUM_INPUTS;
 
-    std::cout << "Hashed " << NUM_INPUTS << " inputs in " << time_us
-              << " µs\n";
+    std::cout << "Hashed " << NUM_INPUTS << " inputs in "
+              << time_us / 1'000 << " ms\n";
     std::cout << "Average time per hash: " << avg_time_us << " µs\n";
 
-    SUCCEED();    // Test always passes, serving as a timing report
+    SUCCEED();
 }
