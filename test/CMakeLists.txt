@@ -1,4 +1,4 @@
-set(TRGT_TEST terminal-blackjack-tests)
+set(TRGT_TEST lea-tests)
 
 enable_testing()
 
