@@ -5,7 +5,8 @@ enable_testing()
 find_package(GTest REQUIRED)
 
 set(TEST_SOURCES
-	${CMAKE_CURRENT_SOURCE_DIR}/core.test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/keyhash.test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/cipher.test.cpp
 )
 
 add_executable(${TRGT_TEST} ${TEST_SOURCES})

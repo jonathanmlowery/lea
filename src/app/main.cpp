@@ -60,10 +60,10 @@ int main(int argc, char** argv) {
 
     std::bitset<256> original1 = lea::bitify_str("abc");
     std::bitset<256> original2 = lea::bitify_str("abd");
-    lea::keyhash hashed1   = lea::gen_keyhash(original1, original1.size());
-    lea::keyhash hashed2   = lea::gen_keyhash(original2, original2.size());
-    std::bitset<256> diff  = hashed1.bits ^ hashed2.bits;
-    int              flips = diff.count();
+    lea::keyhash     hashed1   = lea::gen_keyhash(original1, 3);
+    lea::keyhash     hashed2   = lea::gen_keyhash(original2, 3);
+    std::bitset<256> diff      = hashed1.bits ^ hashed2.bits;
+    int              flips     = diff.count();
     // std::bitset<512> expanded = lea::bit_interleaving_expand(original,
     // 7); std::bitset<256> compacted =
     // lea::sequential_bit_compact(expanded);
