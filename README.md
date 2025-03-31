@@ -35,7 +35,7 @@ ECHO uses two key steps in its hashing process: **Bit Interleaving Expansion (BI
 2. XOR each pair of adjacent bits (0 with 1, 2 with 3, etc.) to produce 256 output bits.
 
 **Example**:
-- Input (from BIE): `01 00 11 01` (8 bits, imagine 512 total).
+- Input: `01 00 11 01` (8 bits, imagine 512 total).
 - XOR pairs: `0^1=1`, `0^0=0`, `1^1=0`, `0^1=1`.
 - Output: `1001` (4 bits, scales to 256 in full).
 - Full run: Each of 256 output bits combines an original and transformed bit.
