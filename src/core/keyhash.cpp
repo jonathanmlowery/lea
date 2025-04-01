@@ -81,7 +81,7 @@ std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
         if (bit_index % 2) {
             expanded_input [bit_index] = padding_bits [bit_index / 2];
         } else {
-            expanded_input [bit_index] = wrapping_input_bits [256
+            expanded_input [bit_index] = wrapping_input_bits [255
                                                               - (bit_index
                                                                  / 2)];
         }

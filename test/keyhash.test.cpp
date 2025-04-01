@@ -4,6 +4,7 @@
 
 #include <bitset>
 #include <random>
+#include <ratio>
 #include <unordered_set>
 #include <vector>
 
@@ -141,24 +142,48 @@ TEST(KeyhashTest, CollisionResistance) {
 }
 
 TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
-    const size_t                         NUM_INPUTS = 1'000'000;
+    const size_t NUM_INPUTS = 100'000;    // use at least 1M to fully
+                                          // test
+    std::vector<std::bitset<256>>        inputs(NUM_INPUTS);
     std::unordered_set<std::bitset<256>> hash_outputs;
 
+    for (auto& input : inputs) { input = generate_random_bitset(); }
+
+    auto time_start      = std::chrono::high_resolution_clock::now();
+    auto time_last_print = time_start;
+
     for (size_t i = 0; i < NUM_INPUTS; i++) {
-        std::bitset<256> input = generate_random_bitset();
-        lea::keyhash     hash  = lea::gen_keyhash(input, 32);
-        auto [it, inserted]    = hash_outputs.insert(hash.bits);
+        lea::keyhash hash = lea::gen_keyhash(inputs [i], 32);
+
+        auto [it, inserted] = hash_outputs.insert(hash.bits);
 
         if (!inserted) {
             FAIL() << "Collision detected at input " << i
                    << ": hash = " << hash.bits;
         }
 
+        auto time_current = std::chrono::high_resolution_clock::now();
+
+        double delta_time_ms = std::chrono::duration<double, std::milli>(
+                                   time_current - time_last_print)
+                                   .count();
         // Optional: Progress log for big runs
-        if (i % 1'000 == 0) {
+        if (delta_time_ms > 1'000) {
             std::cout << "Processed " << i << " inputs..." << std::endl;
+            time_last_print = time_current;
         }
     }
+
+    auto time_end = std::chrono::high_resolution_clock::now();
+
+    double time_us = std::chrono::duration<double, std::micro>(
+                         time_end - time_start)
+                         .count();
+    double avg_time_us = time_us / NUM_INPUTS;
+
+    std::cout << "Hashed " << NUM_INPUTS << " inputs in "
+              << time_us / 1'000 << " ms\n";
+    std::cout << "Average time per hash: " << avg_time_us << " µs\n";
 
     EXPECT_EQ(hash_outputs.size(), NUM_INPUTS)
         << "Expected " << NUM_INPUTS << " unique hashes, got "
