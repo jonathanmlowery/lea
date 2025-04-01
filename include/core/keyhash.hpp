@@ -48,9 +48,7 @@ std::bitset<256> sequential_bit_compact(std::bitset<512>& input_bits);
 
 std::bitset<256> rotate_left(std::bitset<256>& bits, size_t shift);
 std::bitset<256> bitify_str(std::string str);
-std::bitset<256> modulo_bitset(std::bitset<256>& bits, uint64_t modulus);
 void             intermittent_bit_flip(std::bitset<256>& bits);
-void             xor_round_constant(std::bitset<256>& bits, size_t round);
 void             apply_sbox(std::bitset<256>& bits);
 void             mix(std::bitset<256>& bits, size_t round);
 

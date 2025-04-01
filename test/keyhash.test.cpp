@@ -142,8 +142,7 @@ TEST(KeyhashTest, CollisionResistance) {
 }
 
 TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
-    const size_t NUM_INPUTS = 100'000;    // use at least 1M to fully
-                                          // test
+    const size_t NUM_INPUTS = 100'000;    // use at least 1M
     std::vector<std::bitset<256>>        inputs(NUM_INPUTS);
     std::unordered_set<std::bitset<256>> hash_outputs;
 
@@ -157,10 +156,8 @@ TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
 
         auto [it, inserted] = hash_outputs.insert(hash.bits);
 
-        if (!inserted) {
-            FAIL() << "Collision detected at input " << i
-                   << ": hash = " << hash.bits;
-        }
+        EXPECT_TRUE(inserted) << "Collision detected at input " << i
+                              << ": hash = " << hash.bits;
 
         auto time_current = std::chrono::high_resolution_clock::now();
 

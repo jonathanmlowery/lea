@@ -18,13 +18,9 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
         compacted_bits,
         (compacted_bits.count() * PRIMES [0]) % 256);
 
-    // compacted_bits = modulo_bitset(compacted_bits, 2);
-    // xor_round_constant(compacted_bits, 1);
-    // mix(compacted_bits, 1);
-    // apply_sbox(compacted_bits);
-
+    mix(compacted_bits, 1);
+    apply_sbox(compacted_bits);
     intermittent_bit_flip(compacted_bits);
-    compacted_bits ^= (input_bits ^ std::bitset<256>(input_byte_length));
 
     for (size_t i = 1; i < EXPAND_COMPACT_ITERATIONS; i++) {
         expanded_bits = bit_interleaving_expand(compacted_bits, 32);
@@ -34,14 +30,9 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
             compacted_bits,
             (compacted_bits.count() * PRIMES [i]) % 256);
 
-        // compacted_bits = modulo_bitset(compacted_bits, 2);
-        // xor_round_constant(compacted_bits, i);
-        // mix(compacted_bits, i);
-        // apply_sbox(compacted_bits);
-
+        mix(compacted_bits, i + 1);
+        apply_sbox(compacted_bits);
         intermittent_bit_flip(compacted_bits);
-        compacted_bits ^= (input_bits
-                           ^ std::bitset<256>(input_byte_length));
     }
 
     return keyhash {compacted_bits};
@@ -121,38 +112,25 @@ void intermittent_bit_flip(std::bitset<256>& bits) {
     for (size_t i = 0; i < 256; i += PRIME2) { bits [i] = bits [i] ^ 1; }
 }
 
-void xor_round_constant(std::bitset<256>& bits, size_t round) {
-    unsigned char* bytes = reinterpret_cast<unsigned char*>(&bits);
-    for (size_t j = 0; j < 32; j++) {
-        bytes [j] ^= (j * PRIME1 + round * PRIME2) & 0xFF;
-    }
-}
-
 void apply_sbox(std::bitset<256>& bits) {
     unsigned char* bytes = reinterpret_cast<unsigned char*>(&bits);
-    for (size_t j = 0; j < 32; j++) { bytes [j] ^= (bytes [j] * PRIME1); }
+    for (size_t j = 0; j < 32; j++) {
+        uint32_t x      = bytes [j];
+        uint32_t result = (x * PRIME1) ^ (x * x);
+
+        // Fold the 32 bits result (4 bytes) back down to 8 bits (1 byte)
+        uint8_t compacted = (result & 0xFF) ^ ((result >> 8) & 0xFF)
+                          ^ ((result >> 16) & 0xFF)
+                          ^ ((result >> 24) & 0xFF);
+
+        bytes [j] = compacted;
+    }
 }
 
 void mix(std::bitset<256>& bits, size_t round) {
     for (size_t j = 0; j < 256; j++) {
         bits [j] = bits [j] ^ ((j + round * PRIME2) % 2);
     }
-}
-
-std::bitset<256> modulo_bitset(std::bitset<256>& bits, uint64_t modulus) {
-    // divide into 4 chunks of 64b
-    uint64_t chunks [4] = {0};
-    for (size_t i = 0; i < 256; i++) {
-        if (bits [i]) { chunks [i / 64] |= (1ULL << (i % 64)); }
-    }
-
-    uint64_t result = chunks [0] % modulus;
-
-    std::bitset<256> modded_bits;
-    for (size_t i = 0; i < 64 && i < 256; i++) {
-        modded_bits [i] = (result >> i) & 1;
-    }
-    return modded_bits;
 }
 
 }    // namespace lea
