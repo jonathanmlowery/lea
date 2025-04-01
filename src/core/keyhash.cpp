@@ -5,21 +5,17 @@
 
 namespace lea {
 
-keyhash gen_keyhash(std::bitset<256>& input_bits,
-                    size_t            input_byte_length) {
-    std::bitset<512> expanded_bits = bit_interleaving_expand(
-        input_bits,
-        input_byte_length);
+keyhash gen_keyhash(std::bitset<256>& input_bits, size_t input_byte_length) {
+    std::bitset<512> expanded_bits = bit_interleaving_expand(input_bits,
+                                                             input_byte_length);
 
-    std::bitset<256> compacted_bits = sequential_bit_compact(
-        expanded_bits);
+    std::bitset<256> compacted_bits = sequential_bit_compact(expanded_bits);
 
-    compacted_bits = rotate_left(
-        compacted_bits,
-        (compacted_bits.count() * PRIMES [0]) % 256);
+    compacted_bits = rotate_left(compacted_bits,
+                                 (compacted_bits.count() * PRIMES [0]) % 256);
 
     mix(compacted_bits, 1);
-    apply_sbox(compacted_bits);
+    > apply_sbox(compacted_bits);
     intermittent_bit_flip(compacted_bits);
 
     for (size_t i = 1; i < EXPAND_COMPACT_ITERATIONS; i++) {
@@ -39,7 +35,7 @@ keyhash gen_keyhash(std::bitset<256>& input_bits,
 }
 
 std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
-                                         size_t input_byte_length) {
+                                         size_t            input_byte_length) {
 
     std::bitset<256> padding_bits;
     std::bitset<256> wrapping_input_bits;
@@ -51,8 +47,7 @@ std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
 
         std::bitset<8> byte;
         for (size_t bit_index = 0; bit_index < 8; bit_index++) {
-            byte [bit_index] = input_bits [8 * wrapped_byte_index
-                                           + bit_index];
+            byte [bit_index] = input_bits [8 * wrapped_byte_index + bit_index];
         }
 
         uint8_t byte_val        = static_cast<uint8_t>(byte.to_ulong());
@@ -61,9 +56,8 @@ std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
         transformed_byte.flip();
 
         for (size_t bit_index = 0; bit_index < 8; bit_index++) {
-            wrapping_input_bits [byte_index * 8 + bit_index] = byte
-                [bit_index];
-            padding_bits [byte_index * 8 + bit_index] = transformed_byte
+            wrapping_input_bits [byte_index * 8 + bit_index] = byte [bit_index];
+            padding_bits [byte_index * 8 + bit_index]        = transformed_byte
                 [bit_index];
         }
     }
@@ -100,9 +94,7 @@ std::bitset<256> bitify_str(std::string str) {
 
     for (size_t i = 0; i < str.size() && i * 8 < 256; i++) {
         unsigned char byte = static_cast<unsigned char>(str [i]);
-        for (size_t j = 0; j < 8; j++) {
-            bits [i * 8 + j] = (byte >> j) & 1;
-        }
+        for (size_t j = 0; j < 8; j++) { bits [i * 8 + j] = (byte >> j) & 1; }
     }
 
     return bits;
@@ -120,8 +112,7 @@ void apply_sbox(std::bitset<256>& bits) {
 
         // Fold the 32 bits result (4 bytes) back down to 8 bits (1 byte)
         uint8_t compacted = (result & 0xFF) ^ ((result >> 8) & 0xFF)
-                          ^ ((result >> 16) & 0xFF)
-                          ^ ((result >> 24) & 0xFF);
+                          ^ ((result >> 16) & 0xFF) ^ ((result >> 24) & 0xFF);
 
         bytes [j] = compacted;
     }
