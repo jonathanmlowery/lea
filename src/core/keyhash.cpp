@@ -15,7 +15,7 @@ keyhash gen_keyhash(std::bitset<256>& input_bits, size_t input_byte_length) {
                                  (compacted_bits.count() * PRIMES [0]) % 256);
 
     mix(compacted_bits, 1);
-    > apply_sbox(compacted_bits);
+    apply_sbox(compacted_bits);
     intermittent_bit_flip(compacted_bits);
 
     for (size_t i = 1; i < EXPAND_COMPACT_ITERATIONS; i++) {
