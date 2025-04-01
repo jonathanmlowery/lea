@@ -3,13 +3,8 @@
 #include <bitset>
 #include <iostream>
 
+#include "cipher.hpp"
 #include "keyhash.hpp"
-
-enum Mode {
-    DECRYPT,
-    UNSET,
-    ENCRYPT,
-};
 
 int main(int argc, char** argv) {
     bool        verbose = false;

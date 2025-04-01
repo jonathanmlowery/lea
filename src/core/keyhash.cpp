@@ -8,7 +8,7 @@
 
 namespace lea {
 
-std::string keyhash::hex_str() {
+std::string keyhash::hex_str() const noexcept {
     std::ostringstream oss;
     oss << std::hex << std::uppercase << std::setfill('0');
     for (int i = 3; i >= 0; --i) {
@@ -21,7 +21,8 @@ std::string keyhash::hex_str() {
     return oss.str();
 }
 
-keyhash gen_keyhash(std::bitset<256>& input_bits, size_t input_byte_length) {
+keyhash gen_keyhash(const std::bitset<256>& input_bits,
+                    size_t                  input_byte_length) {
     std::bitset<512> expanded_bits = bit_interleaving_expand(input_bits,
                                                              input_byte_length);
 
@@ -50,8 +51,8 @@ keyhash gen_keyhash(std::bitset<256>& input_bits, size_t input_byte_length) {
     return keyhash {compacted_bits};
 }
 
-std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
-                                         size_t            input_byte_length) {
+std::bitset<512> bit_interleaving_expand(const std::bitset<256>& input_bits,
+                                         size_t input_byte_length) {
 
     std::bitset<256> padding_bits;
     std::bitset<256> wrapping_input_bits;
@@ -91,7 +92,7 @@ std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
     return expanded_input;
 }
 
-std::bitset<256> sequential_bit_compact(std::bitset<512>& input_bits) {
+std::bitset<256> sequential_bit_compact(const std::bitset<512>& input_bits) {
     std::bitset<256> compacted_input;
 
     for (int i = 0; i < 512; i += 2) {
@@ -101,11 +102,11 @@ std::bitset<256> sequential_bit_compact(std::bitset<512>& input_bits) {
     return compacted_input;
 }
 
-std::bitset<256> rotate_left(std::bitset<256>& bits, size_t shift) {
+std::bitset<256> rotate_left(const std::bitset<256>& bits, size_t shift) {
     return (bits << shift) | (bits >> (256 - shift));
 }
 
-std::bitset<256> bitify_str(std::string str) {
+std::bitset<256> bitify_str(const std::string& str) {
     std::bitset<256> bits;
 
     for (size_t i = 0; i < str.size() && i * 8 < 256; i++) {
