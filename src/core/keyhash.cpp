@@ -2,8 +2,24 @@
 
 #include <bitset>
 #include <cmath>
+#include <iomanip>
+#include <sstream>
+#include <string>
 
 namespace lea {
+
+std::string keyhash::hex_str() {
+    std::ostringstream oss;
+    oss << std::hex << std::uppercase << std::setfill('0');
+    for (int i = 3; i >= 0; --i) {
+        uint64_t chunk = 0;
+        for (int j = 0; j < 64; ++j) {
+            chunk |= static_cast<uint64_t>(bits [i * 64 + j]) << (63 - j);
+        }
+        oss << std::setw(16) << chunk;
+    }
+    return oss.str();
+}
 
 keyhash gen_keyhash(std::bitset<256>& input_bits, size_t input_byte_length) {
     std::bitset<512> expanded_bits = bit_interleaving_expand(input_bits,

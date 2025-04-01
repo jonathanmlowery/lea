@@ -69,9 +69,9 @@ int main(int argc, char** argv) {
     // lea::sequential_bit_compact(expanded);
 
     std::cout << "Original1 bits: \n" << original1 << '\n';
-    std::cout << "Keyhash1 bits: \n" << hashed1.bits << '\n';
+    std::cout << "Keyhash1 bits: \n" << hashed1.hex_str() << '\n';
     std::cout << "Original2 bits: \n" << original2 << '\n';
-    std::cout << "Keyhash2 bits: \n" << hashed2.bits << '\n';
+    std::cout << "Keyhash2 bits: \n" << hashed2.hex_str() << '\n';
     // std::cout << "Expanded bits: \n" << expanded << '\n';
     // std::cout << "Compacted bits: \n" << compacted << '\n';
     std::cout << "Flips: " << flips << '\n';

@@ -9,20 +9,7 @@ namespace lea {
 const size_t PRIME1 = 17;
 const size_t PRIME2 = 31;
 
-const size_t PRIMES [] = {3,
-                          5,
-                          7,
-                          11,
-                          13,
-                          17,
-                          19,
-                          23,
-                          29,
-                          31,
-                          37,
-                          41,
-                          43,
-                          47};
+const size_t PRIMES [] = {3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47};
 
 const size_t EXPAND_COMPACT_ITERATIONS = 4;
 
@@ -33,14 +20,15 @@ const size_t EXPAND_COMPACT_ITERATIONS = 4;
 
 struct keyhash {
     std::bitset<256> bits;
+
+    std::string hex_str();
 };
 
-keyhash gen_keyhash(std::bitset<256>& input_bits,
-                    size_t            input_byte_length);
+keyhash gen_keyhash(std::bitset<256>& input_bits, size_t input_byte_length);
 
 // Bit-Interleaving Expansion
 std::bitset<512> bit_interleaving_expand(std::bitset<256>& input_bits,
-                                         size_t input_byte_length);
+                                         size_t            input_byte_length);
 
 // unsigned long long pow(int base, int exp);
 // Sequential Bit Compaction

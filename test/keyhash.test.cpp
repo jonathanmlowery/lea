@@ -142,8 +142,8 @@ TEST(KeyhashTest, CollisionResistance) {
 }
 
 TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
-    const size_t NUM_INPUTS = 100'000;    // use at least 1M
-    std::vector<std::bitset<256>>        inputs(NUM_INPUTS);
+    const size_t                  NUM_INPUTS = 100'000;    // use at least 1M
+    std::vector<std::bitset<256>> inputs(NUM_INPUTS);
     std::unordered_set<std::bitset<256>> hash_outputs;
 
     for (auto& input : inputs) { input = generate_random_bitset(); }
@@ -156,8 +156,8 @@ TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
 
         auto [it, inserted] = hash_outputs.insert(hash.bits);
 
-        EXPECT_TRUE(inserted) << "Collision detected at input " << i
-                              << ": hash = " << hash.bits;
+        EXPECT_TRUE(inserted)
+            << "Collision detected at input " << i << ": hash = " << hash.bits;
 
         auto time_current = std::chrono::high_resolution_clock::now();
 
@@ -165,7 +165,7 @@ TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
                                    time_current - time_last_print)
                                    .count();
         // Optional: Progress log for big runs
-        if (delta_time_ms > 1'000) {
+        if (delta_time_ms > 500) {
             std::cout << "Processed " << i << " inputs..." << std::endl;
             time_last_print = time_current;
         }
@@ -178,8 +178,8 @@ TEST(KeyhashTest, CollisionResistance_LargeRandomInputs) {
                          .count();
     double avg_time_us = time_us / NUM_INPUTS;
 
-    std::cout << "Hashed " << NUM_INPUTS << " inputs in "
-              << time_us / 1'000 << " ms\n";
+    std::cout << "Hashed " << NUM_INPUTS << " inputs in " << time_us / 1'000
+              << " ms\n";
     std::cout << "Average time per hash: " << avg_time_us << " µs\n";
 
     EXPECT_EQ(hash_outputs.size(), NUM_INPUTS)
@@ -208,8 +208,8 @@ TEST(KeyhashTest, HashTiming) {
                          .count();
     double avg_time_us = time_us / NUM_INPUTS;
 
-    std::cout << "Hashed " << NUM_INPUTS << " inputs in "
-              << time_us / 1'000 << " ms\n";
+    std::cout << "Hashed " << NUM_INPUTS << " inputs in " << time_us / 1'000
+              << " ms\n";
     std::cout << "Average time per hash: " << avg_time_us << " µs\n";
 
     SUCCEED();
