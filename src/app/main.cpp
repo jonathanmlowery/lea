@@ -13,43 +13,31 @@ int main(int argc, char** argv) {
     std::string output_file;
     std::string key_str;
 
-    struct option long_options [] = {
-        {"verbose", no_argument,       0, 'v'},
-        {"output",  required_argument, 0, 'o'},
-        {"input",   required_argument, 0, 'i'},
-        {"encrypt", no_argument,       0, 'e'},
-        {"decrypt", no_argument,       0, 'd'},
-        {"key",     required_argument, 0, 'k'},
-        {0,         0,                 0, 0  },
+    struct option long_options[] = {
+        {"verbose",       no_argument, 0, 'v'},
+        { "output", required_argument, 0, 'o'},
+        {  "input", required_argument, 0, 'i'},
+        {"encrypt",       no_argument, 0, 'e'},
+        {"decrypt",       no_argument, 0, 'd'},
+        {    "key", required_argument, 0, 'k'},
+        {        0,                 0, 0,   0},
     };
 
     int opt;
     while ((opt = getopt_long(argc, argv, "voiedk", long_options, nullptr))
            != -1) {
         switch (opt) {
-            case 'e':
-                mode = ENCRYPT;
-                break;
+            case 'e': mode = ENCRYPT; break;
 
-            case 'd':
-                mode = DECRYPT;
-                break;
+            case 'd': mode = DECRYPT; break;
 
-            case 'v':
-                verbose = true;
-                break;
+            case 'v': verbose = true; break;
 
-            case 'i':
-                input_file = optarg;
-                break;
+            case 'i': input_file = optarg; break;
 
-            case 'o':
-                output_file = optarg;
-                break;
+            case 'o': output_file = optarg; break;
 
-            case 'k':
-                key_str = optarg;
-                break;
+            case 'k': key_str = optarg; break;
         }
     }
 
@@ -70,4 +58,31 @@ int main(int argc, char** argv) {
     // std::cout << "Expanded bits: \n" << expanded << '\n';
     // std::cout << "Compacted bits: \n" << compacted << '\n';
     std::cout << "Flips: " << flips << '\n';
+
+    std::string text = "Hello World!";
+    std::cout << text << '\n';
+    std::vector<uint8_t> plaintext(text.begin(), text.end());
+    std::vector<uint8_t> ciphertext     = lea::encrypt(plaintext, hashed1);
+    std::vector<uint8_t> uncipheredtext = lea::decrypt(ciphertext, hashed1);
+
+    std::cout << "Plaintext: ";
+    for (auto byte : plaintext) {
+        std::cout << std::hex << static_cast<int>(byte) << " ";
+    }
+
+    std::cout << std::dec << std::endl;
+
+    std::cout << "Ciphertext: ";
+    for (auto byte : ciphertext) {
+        std::cout << std::hex << static_cast<int>(byte) << " ";
+    }
+
+    std::cout << std::dec << std::endl;
+
+    std::cout << "Uncipheredtext: ";
+    for (auto byte : uncipheredtext) {
+        std::cout << std::hex << static_cast<int>(byte) << " ";
+    }
+
+    std::cout << std::dec << std::endl;
 }
