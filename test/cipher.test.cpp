@@ -91,3 +91,20 @@ TEST(CipherTest, CipherBlockIsReversible) {
     EXPECT_EQ(std::vector<uint8_t>(dec.begin(), dec.end()),
               std::vector<uint8_t>(block.begin(), block.end()));
 }
+
+TEST(CipherTest, MassEncryptDecryptRandomized) {
+    std::mt19937                          rng(2'024);
+    std::uniform_int_distribution<size_t> size_dist(0, 256);
+    for (int i = 0; i < 1'000; ++i) {
+        size_t               data_size = size_dist(rng);
+        std::vector<uint8_t> data(data_size);
+        for (size_t j = 0; j < data_size; ++j) {
+            data[j] = static_cast<uint8_t>(rng() & 0xFF);
+        }
+        keyhash key       = make_key(rng());
+        auto    encrypted = encrypt(data, key);
+        auto    decrypted = decrypt(encrypted, key);
+        EXPECT_EQ(decrypted, data)
+            << "Failed at iteration " << i << " with size " << data_size;
+    }
+}
